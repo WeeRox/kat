@@ -1,3 +1,3 @@
 AUTOMAKE_OPTIONS = foreign
 
-bin_PROGRAMS = kat
+SUBDIRS = src
