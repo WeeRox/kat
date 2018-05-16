@@ -16,6 +16,7 @@ Makefile.in
 /missing
 
 .deps
+.dirstamp
 
 .libs
 /ltmain.sh
