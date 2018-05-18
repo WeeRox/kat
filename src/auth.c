@@ -5,8 +5,14 @@
 int has_token()
 {
 	int has_token = 1;
+
+	char *home = getenv("HOME");
+	char *path = malloc(strlen(home) + strlen("/.katconfig") + 1);
+	strcpy(path, home);
+	strcat(path, "/.katconfig");
+
 	FILE *config;
-	config = fopen(strcat(getenv("HOME"), "/.katconfig"), "r");
+	config = fopen(path, "r");
 	if (config)
 	{
 		configr *handle = configr_init();
@@ -32,12 +38,15 @@ char *get_user()
 
 	if (has_token() == 0)
 	{
-		FILE *config;
-		config = fopen(strcat(getenv("HOME"), "/.katconfig"), "r");
+		char *home = getenv("HOME");
+		char *path = malloc(strlen(home) + strlen("/.katconfig") + 1);
+		strcpy(path, home);
+		strcat(path, "/.katconfig");
 
+		FILE *config;
+		config = fopen(path, "r");
 		configr *handle = configr_init();
 		configr_parse_stream(handle, config);
-
 		configr_key *key = configr_get_key(handle, "user", "user");
 		if (key != NULL)
 		{
@@ -63,6 +72,11 @@ char *get_passwd()
 
 	if (has_token() == 0)
 	{
+		char *home = getenv("HOME");
+		char *path = malloc(strlen(home) + strlen("/.katconfig") + 1);
+		strcpy(path, home);
+		strcat(path, "/.katconfig");
+
 		FILE *config;
 		config = fopen(strcat(getenv("HOME"), "/.katconfig"), "r");
 
