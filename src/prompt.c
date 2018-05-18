@@ -58,28 +58,42 @@ char *prompt_text(char *prompt)
 
 char *prompt_passwd(char *prompt)
 {
+	printf("%s", prompt);
 
 	struct termios old, new;
 	int nread;
 
-	char *buffer;
-	int buffer_size;
+	char *buffer = malloc(1);
+	size_t buffer_size = 1;
 
 	/* Turn echoing off and fail if we can’t. */
-	if (tcgetattr (fileno (stdin), &old) != 0)
-		return -1;
+	if (tcgetattr(fileno(stdin), &old) != 0)
+		return NULL;
+
 	new = old;
 	new.c_lflag &= ~ECHO;
-	if (tcsetattr (fileno (stdin), TCSAFLUSH, &new) != 0)
-		return -1;
+
+	if (tcsetattr(fileno(stdin), TCSAFLUSH, &new) != 0)
+		return NULL;
 
 	/* Read the password. */
-	nread = getline (&buffer, &buffer_size, stdin);
+	nread = getline(&buffer, &buffer_size, stdin);
 
 	/* Restore terminal. */
-	(void) tcsetattr (fileno (stdin), TCSAFLUSH, &old);
+	(void) tcsetattr(fileno(stdin), TCSAFLUSH, &old);
 
-	return buffer;
+	char *result;
+
+	if (*(buffer + nread - 1) == '\n')
+	{
+		/* remove trailing newline */
+		*(buffer + nread - 1) = '\0';
+		result = calloc(nread - 1, sizeof(char));
+		strcpy(result, buffer);
+	}
+	printf("\n");
+
+	return result;
 }
 
 #else
