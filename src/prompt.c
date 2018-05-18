@@ -1,7 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
+
+#ifdef HAVE_GETPASS
+#include <termios.h>
+#endif
 
 char *prompt_text(char *prompt)
 {
@@ -51,7 +54,40 @@ char *prompt_text(char *prompt)
 	return result;
 }
 
+#ifdef HAVE_GETPASS
+
 char *prompt_passwd(char *prompt)
 {
-	return getpass(prompt);
+
+	struct termios old, new;
+	int nread;
+
+	char *buffer;
+	int buffer_size;
+
+	/* Turn echoing off and fail if we can’t. */
+	if (tcgetattr (fileno (stdin), &old) != 0)
+		return -1;
+	new = old;
+	new.c_lflag &= ~ECHO;
+	if (tcsetattr (fileno (stdin), TCSAFLUSH, &new) != 0)
+		return -1;
+
+	/* Read the password. */
+	nread = getline (&buffer, &buffer_size, stdin);
+
+	/* Restore terminal. */
+	(void) tcsetattr (fileno (stdin), TCSAFLUSH, &old);
+
+	return buffer;
 }
+
+#else
+
+char *prompt_passwd(char *prompt)
+{
+	/* TODO: fix a Windows implementation of getpass() */
+	return prompt_text(prompt);
+}
+
+#endif /* HAVE_GETPASS */
