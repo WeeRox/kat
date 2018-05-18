@@ -105,3 +105,63 @@ char *prompt_passwd(char *prompt)
 }
 
 #endif /* HAVE_GETPASS */
+
+int prompt_yesno(char *prompt, int def)
+{
+	char *prompt_full = malloc(strlen(prompt) + 1);
+
+	strcpy(prompt_full, prompt);
+
+	if (*(prompt + strlen(prompt) - 1) != ' ')
+	{
+		prompt_full = realloc(prompt_full, strlen(prompt_full + 1 + 1));
+		strcat(prompt_full, " ");
+	}
+
+	prompt_full = realloc(prompt_full, strlen(prompt_full) + 6 + 1);
+
+	if (def)
+	{
+		strcat(prompt_full, "[Y/n] ");
+	}
+	else
+	{
+		strcat(prompt_full, "[y/N] ");
+	}
+
+	printf("%s", prompt_full);
+
+	char c;
+	char *text;
+
+	while (1) {
+		text = prompt_text("");
+		c = text[0];
+
+		if (strlen(text) == 0)
+		{
+			return def;
+		}
+		else if (c == 'Y' || c == 'y')
+		{
+			return 1;
+		}
+		else if (c == 'N' || c == 'n')
+		{
+			return 0;
+		}
+		else
+		{
+			/* remove the user input from terminal */
+			printf("\x1B[A");
+			printf("%s", prompt_full);
+			for (size_t i = 0; i < strlen(text); i++) {
+				printf(" ");
+			}
+			for (size_t i = 0; i < strlen(text); i++) {
+				printf("\b");
+			}
+			continue;
+		}
+	}
+}
