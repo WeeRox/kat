@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef HAVE_GETPASS
+#ifdef HAVE_TERMIOS_H
 #include <termios.h>
 #endif
 
@@ -54,7 +54,7 @@ char *prompt_text(char *prompt)
 	return result;
 }
 
-#ifdef HAVE_GETPASS
+#ifdef HAVE_TERMIOS_H
 
 char *prompt_passwd(char *prompt)
 {
@@ -104,7 +104,7 @@ char *prompt_passwd(char *prompt)
 	return prompt_text(prompt);
 }
 
-#endif /* HAVE_GETPASS */
+#endif /* HAVE_TERMIOS_H */
 
 int prompt_yesno(char *prompt, int def)
 {
